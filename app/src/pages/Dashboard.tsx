@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useWellness } from '@/contexts/WellnessContext';
 import { StressScoreGauge } from '@/components/wellness/StressScoreGauge';
 import { StressStatusBadge } from '@/components/wellness/StressStatusBadge';
@@ -8,10 +8,33 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/components/ui/use-toast';
 
+const StressAnalysisButton = ({ isLoading, onClick }: { isLoading: boolean; onClick: () => void }) => (
+  <Button
+    onClick={onClick}
+    disabled={isLoading}
+    className="w-full bg-green-500 hover:bg-green-600 text-white rounded-md py-2 shadow-md"
+  >
+    {isLoading ? (
+      <>
+        <Loader2 className="animate-spin mr-2" />
+        Analyzing...
+      </>
+    ) : (
+      <>
+        <Sparkles className="w-4 h-4 mr-2" />
+        Get Stress Analysis
+      </>
+    )}
+  </Button>
+);
+
 export default function Dashboard() {
-  const { stressData, loadNotifications } = useWellness();
+  const { stressData, loadNotifications, addAlert } = useWellness();
   const navigate = useNavigate();
   const [isLoadingMock, setIsLoadingMock] = useState(false);
+  const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
+  const [analysisMessage, setAnalysisMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const metrics = [
     { label: 'HRV', value: Math.round(stressData.hrv), unit: 'ms', icon: Heart, color: 'text-primary' },
@@ -49,6 +72,57 @@ export default function Dashboard() {
       setIsLoadingMock(false);
     }
   };
+
+  const handleGetStressAnalysis = () => {
+    setIsLoadingAnalysis(true);
+    setTimeout(() => {
+      const stressScore = stressData.score;
+      let message = '';
+
+      if (stressScore < 20) {
+        message = `Your stress level is low with a score of ${stressScore}. Keep up the good work!`;
+      } else if (stressScore < 40) {
+        message = `You're holding a moderate amount of stress – a score of ${stressScore} suggests you're feeling a bit tense.`;
+      } else if (stressScore < 60) {
+        message = `Your stress level is elevated with a score of ${stressScore}. Consider taking some time to relax.`;
+      } else {
+        message = `High stress alert! Your score of ${stressScore} indicates significant stress. Please prioritize self-care.`;
+      }
+
+      setAnalysisMessage(message);
+      addAlert({
+        id: Date.now().toString(),
+        message,
+        timestamp: new Date().toISOString(),
+      });
+      setIsLoadingAnalysis(false);
+    }, 2000);
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const stressScore = stressData.score;
+
+      fetch('/src/data/stressAnalysisResponses.json')
+        .then((response) => response.json())
+        .then((data) => {
+          const matchedResponse = data.find(
+            (item) => stressScore >= item.range[0] && stressScore < item.range[1]
+          );
+
+          if (matchedResponse) {
+            setAnalysisMessage(matchedResponse.message);
+            addAlert({
+              id: Date.now().toString(),
+              message: matchedResponse.message,
+              timestamp: new Date().toISOString(),
+            });
+          }
+        });
+    }, 10000); // Check every 10 seconds
+
+    return () => clearInterval(interval);
+  }, [stressData, addAlert]);
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -105,24 +179,13 @@ export default function Dashboard() {
               </div>
             )}
 
-            <Button
-              onClick={handleMockStressAnalysis}
-              disabled={isLoadingMock}
-              className="mt-4 w-full"
-              variant="outline"
-            >
-              {isLoadingMock ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Analyzing...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Get Stress Analysis
-                </>
-              )}
-            </Button>
+            {/* Unified Stress Analysis Button */}
+            <div className="mt-6 w-full">
+              <StressAnalysisButton
+                isLoading={isLoadingAnalysis}
+                onClick={handleGetStressAnalysis}
+              />
+            </div>
 
             <p className="text-sm text-muted-foreground mt-3 text-center">
               Last updated: {stressData.timestamp.toLocaleTimeString()}
@@ -153,6 +216,7 @@ export default function Dashboard() {
           ))}
         </div>
 
+        {/* Quick Actions */}
         <Card className="p-6 bg-gradient-fresh shadow-neu">
           <h3 className="font-semibold text-lg mb-2">Quick Actions</h3>
           <div className="grid grid-cols-2 gap-3">
@@ -171,6 +235,9 @@ export default function Dashboard() {
               Weekly Insights
             </Button>
           </div>
+          {analysisMessage && (
+            <p className="mt-4 text-sm text-muted-foreground">{analysisMessage}</p>
+          )}
         </Card>
       </div>
     </div>

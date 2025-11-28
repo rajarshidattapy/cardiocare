@@ -1,0 +1,22 @@
+[
+  { "range": [0, 5], "message": "Calm and stable. Physically and mentally balanced. Maintain your routine." },
+  { "range": [5, 10], "message": "Slight stress but fully manageable. Good control over emotions and workload." },
+  { "range": [10, 15], "message": "You're doing fine. Small stress signals may appear—sleep and hydration matter." },
+  { "range": [15, 20], "message": "Low stress. Keep up healthy habits before it creeps up unnoticed." },
+  { "range": [20, 25], "message": "Mild tension. Probably workload or personal pressure—short breaks will help." },
+  { "range": [25, 30], "message": "Noticeable stress. Productivity and patience may start dipping. Reset your pace." },
+  { "range": [30, 35], "message": "Moderate stress. You're pushing through but not comfortably. Re-evaluate priorities." },
+  { "range": [35, 40], "message": "Rising stress. Your body/mind is asking for rest—don't ignore basic needs." },
+  { "range": [40, 45], "message": "Clear signs of stress. Overthinking and fatigue likely. Reduce stimulation and slow down." },
+  { "range": [45, 50], "message": "Stress impacting focus and mood. The longer you drag this, the harder it rebounds." },
+  { "range": [50, 55], "message": "High tension mode. Sleep patterns and productivity may be compromised. Prioritize recovery." },
+  { "range": [55, 60], "message": "Stress affecting your daily functioning. You need a reset—social support and rest help." },
+  { "range": [60, 65], "message": "Strong stress response. Irritability/overwhelm likely. Stop pushing through." },
+  { "range": [65, 70], "message": "Chronic stress symptoms forming. You need a break—not negotiation, but necessity." },
+  { "range": [70, 75], "message": "Very high stress. Performance and health both at risk. Cut down responsibilities immediately." },
+  { "range": [75, 80], "message": "Danger zone. Mental and physical strain increasing. Get breathing room and talk to someone." },
+  { "range": [80, 85], "message": "Severe stress. Body is nearing shutdown mode. Don't rationalize working through this." },
+  { "range": [85, 90], "message": "Critical stress level. Anxiety or burnout signs likely. You need structured support and rest." },
+  { "range": [90, 95], "message": "Extremely high stress. You're not coping — health risk is real. Seek personal or professional support." },
+  { "range": [95, 100], "message": "Emergency level. This is not sustainable. Immediate intervention and help required — don't wait." }
+]

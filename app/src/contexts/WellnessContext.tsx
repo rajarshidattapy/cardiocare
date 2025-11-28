@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { WellnessContext } from './WellnessContextDefinition';
 
 export interface StressData {
   score: number;
@@ -82,9 +83,15 @@ interface WellnessContextType {
   loadNotifications: () => Promise<void>;
   markInsightRead: (id: string) => void;
   isLoadingStress: boolean;
+  alerts: {
+    id: string;
+    message: string;
+    timestamp: string;
+  }[];
+  addAlert: (alert: { id: string; message: string; timestamp: string }) => void;
 }
 
-const WellnessContext = createContext<WellnessContextType | undefined>(undefined);
+export const WellnessContext = createContext<WellnessContextType | undefined>(undefined);
 
 export const useWellness = () => {
   const context = useContext(WellnessContext);
@@ -117,39 +124,39 @@ export const WellnessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: '1',
-      type: 'reminder',
-      title: 'Time for a breathing break',
-      message: 'You\'ve been working for 2 hours. Take 5 minutes to practice deep breathing.',
-      timestamp: new Date(Date.now() - 15 * 60000),
+      type: 'tip',
+      title: 'Box Breathing Exercise',
+      message: 'Calm your nervous system with 4-4-4-4 breathing',
+      timestamp: new Date(),
       icon: 'Wind',
       read: false,
     },
     {
       id: '2',
-      type: 'alert',
-      title: 'Stress spike detected',
-      message: 'Your heart rate increased during your commute. Consider relaxing music.',
-      timestamp: new Date(Date.now() - 45 * 60000),
-      icon: 'AlertCircle',
+      type: 'tip',
+      title: 'Nature Exposure',
+      message: 'Spend time outdoors to reduce cortisol levels',
+      timestamp: new Date(),
+      icon: 'Tree',
       read: false,
     },
     {
       id: '3',
       type: 'tip',
-      title: 'Hydration reminder',
-      message: 'Staying hydrated helps manage stress. Drink a glass of water.',
-      timestamp: new Date(Date.now() - 90 * 60000),
-      icon: 'Droplets',
-      read: true,
+      title: 'Progressive Muscle Relaxation',
+      message: 'Release physical tension systematically',
+      timestamp: new Date(),
+      icon: 'Smile',
+      read: false,
     },
     {
       id: '4',
-      type: 'achievement',
-      title: 'Wellness streak!',
-      message: 'You\'ve completed your wellness routine for 7 days straight! 🎉',
-      timestamp: new Date(Date.now() - 180 * 60000),
-      icon: 'Trophy',
-      read: true,
+      type: 'tip',
+      title: 'Digital Detox Hour',
+      message: 'Screen-free time before bed for better sleep',
+      timestamp: new Date(),
+      icon: 'Moon',
+      read: false,
     },
   ]);
 
@@ -260,6 +267,12 @@ export const WellnessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     },
   ]);
 
+  const [alerts, setAlerts] = useState<{
+    id: string;
+    message: string;
+    timestamp: string;
+  }[]>([]);
+
   // Fetch stress prediction from backend
   const fetchStressPrediction = async () => {
     setIsLoadingStress(true);
@@ -357,6 +370,16 @@ export const WellnessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     );
   };
 
+  const addAlert = (alert: { id: string; message: string; timestamp: string }) => {
+    setAlerts((prev) => {
+      // Avoid duplicate alerts
+      if (prev.some((existingAlert) => existingAlert.message === alert.message)) {
+        return prev;
+      }
+      return [...prev, alert];
+    });
+  };
+
   return (
     <WellnessContext.Provider
       value={{
@@ -374,6 +397,8 @@ export const WellnessProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         loadNotifications,
         markInsightRead,
         isLoadingStress,
+        alerts,
+        addAlert,
       }}
     >
       {children}

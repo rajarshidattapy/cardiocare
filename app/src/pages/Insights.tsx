@@ -12,10 +12,10 @@ export default function Insights() {
   const unreadCount = insights.filter((i) => !i.read).length;
 
   const majorStressReasons = [
-    { factor: 'Work pressure', impact: 'High', icon: 'Briefcase' },
-    { factor: 'Sleep quality', impact: 'Moderate', icon: 'Moon' },
-    { factor: 'Physical activity', impact: 'Low', icon: 'Activity' },
-    { factor: 'Social connections', impact: 'Moderate', icon: 'Users' },
+    { factor: 'Work pressure', impact: 'High', icon: '🧳' },
+    { factor: 'Sleep quality', impact: 'Moderate', icon: '🌙' },
+    { factor: 'Physical activity', impact: 'Low', icon: '🏃' },
+    { factor: 'Social connections', impact: 'Moderate', icon: '🧑‍🤝‍🧑' },
   ];
 
   return (
