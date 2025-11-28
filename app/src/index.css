@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 210 50% 98%;
+    --foreground: 220 15% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 20%;
+
+    /* Sky blue - calming primary */
+    --primary: 205 85% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Lavender - wellness secondary */
+    --secondary: 260 50% 75%;
+    --secondary-foreground: 260 50% 20%;
+
+    /* Soft backgrounds */
+    --muted: 210 40% 96%;
+    --muted-foreground: 220 15% 45%;
+
+    /* Mint green - refreshing accent */
+    --accent: 160 50% 70%;
+    --accent-foreground: 160 50% 15%;
+
+    /* Soft coral for warnings */
+    --warning: 20 90% 70%;
+    --warning-foreground: 20 90% 20%;
+
+    /* Crisis red - controlled but urgent */
+    --destructive: 0 80% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 20% 88%;
+    --input: 220 20% 92%;
+    --ring: 205 85% 60%;
+
+    --radius: 1rem;
+
+    /* Wellness gradients */
+    --gradient-calm: linear-gradient(135deg, hsl(205 85% 85%), hsl(260 50% 85%));
+    --gradient-warm: linear-gradient(135deg, hsl(20 90% 85%), hsl(40 90% 85%));
+    --gradient-fresh: linear-gradient(135deg, hsl(160 50% 85%), hsl(180 50% 85%));
+    
+    /* Stress level colors */
+    --stress-low: 160 60% 55%;
+    --stress-moderate: 45 90% 60%;
+    --stress-high: 30 85% 60%;
+    --stress-critical: 0 80% 60%;
+
+    /* Neumorphic shadows */
+    --shadow-neu-light: -8px -8px 16px rgba(255, 255, 255, 0.8), 8px 8px 16px rgba(163, 177, 198, 0.3);
+    --shadow-neu-inset: inset -4px -4px 8px rgba(255, 255, 255, 0.5), inset 4px 4px 8px rgba(163, 177, 198, 0.2);
+  }
+
+  .dark {
+    --background: 220 25% 12%;
+    --foreground: 210 40% 95%;
+
+    --card: 220 25% 15%;
+    --card-foreground: 210 40% 95%;
+
+    --popover: 220 25% 15%;
+    --popover-foreground: 210 40% 95%;
+
+    --primary: 205 75% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 260 40% 60%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 220 25% 20%;
+    --muted-foreground: 210 20% 65%;
+
+    --accent: 160 40% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --warning: 20 80% 60%;
+    --warning-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 25% 25%;
+    --input: 220 25% 20%;
+    --ring: 205 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
