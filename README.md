@@ -1,120 +1,109 @@
-# CardioCare
+# CardioCare (Neurocare)
 
-CardioCare is a comprehensive stress management and wellness application designed to monitor, analyze, and provide actionable insights into your stress levels. The app integrates machine learning models, interactive dashboards, and personalized recommendations to help users maintain their mental and physical well-being.
+Stress monitoring and wellness app. It takes seven days of physiological data (HRV, heart rate, breathing rate, EDA, skin temperature, steps, active minutes, sleep), predicts a stress score with a BiLSTM + attention + CNN model, and turns it into an explanation, a recommendation and a daily wellness plan.
+
+## Publication
+
+Presented at **AICTE IC-AISMART 2025**.
+
+- [Paper](https://drive.google.com/file/d/1rtIyLkhXJknbG6IZ3xnvYhAdfZMtekmR/view?usp=sharing)
+- [Certificate](https://drive.google.com/file/d/1gIixv8__F7TiX_gNnTqxBhzfHkMsGMrs/view?usp=sharing)
+
+## Screenshots
+
+Captured from the running frontend (mobile viewport). The dashboard shows the app's default values until you run a stress analysis against the backend.
+
+| Dashboard | Insights | Wellness Plan |
+|---|---|---|
+| <img src="docs/screenshots/1-dashboard.png" width="250"> | <img src="docs/screenshots/2-insights.png" width="250"> | <img src="docs/screenshots/3-wellness-plan.png" width="250"> |
+
+| Recommendations | Crisis Support |
+|---|---|
+| <img src="docs/screenshots/4-recommendations.png" width="250"> | <img src="docs/screenshots/5-crisis-support.png" width="250"> |
 
 ## Features
 
-### 1. Stress Analysis
-- **Real-time Stress Monitoring**: Analyze stress levels using metrics like HRV, heart rate, and breathing rate.
-- **AI-Powered Insights**: Get detailed stress analysis and recommendations based on your data.
+- **Stress score**: gauge with a status badge (e.g. Moderate), plus HRV and heart rate cards. "Get Stress Analysis" sends the last 7 days to the model.
+- **AI explanation and recommendation**: the backend asks an LLM (via OpenRouter) for a short explanation and a suggestion based on the score and latest vitals.
+- **Alerts**: each analysis is saved as a notification, newest first, with read/unread state.
+- **Insights**: 7-day stress trend and major stress reasons.
+- **Wellness plan**: editable daily routines with toggles.
+- **Recommendations**: activities such as box breathing, with progress tracking.
+- **Crisis support**: helpline resources in one tap.
+- **Auth**: sign-in and sign-up through Clerk.
 
-### 2. Notifications
-- **Alerts**: Receive notifications for critical stress levels.
-- **Dynamic Updates**: Alerts are sorted in reverse chronological order for easy tracking.
-
-### 3. Insights
-- **Major Stress Reasons**: Visual representation of key stress factors with icons.
-- **Weekly Trends**: View stress trends over the past week.
-
-### 4. Wellness Plan
-- **Editable Plans**: Customize your daily wellness plan.
-- **Recommendations**: Get personalized suggestions to improve your well-being.
-
-## Technologies Used
-
-### Frontend
-- **React**: For building interactive user interfaces.
-- **TypeScript**: Ensures type safety and better developer experience.
-- **Tailwind CSS**: Provides utility-first styling for rapid UI development.
-
-### Backend
-- **Python**: Powers the machine learning models and API endpoints.
-- **Flask**: Serves as the backend framework.
-
-### Machine Learning
-- **TensorFlow/Keras**: Used for building and training the stress analysis model.
-- **Pretrained Model**: `neurocare_stress_model.h5` for stress prediction.
-
-### Data
-- **Datasets**: Includes `heart_dataset.csv` and `cleaned_dataset.csv` for training and analysis.
-- **JSON**: Stores predefined stress analysis responses.
-
-## Folder Structure
+## How it works
 
 ```
-app/
-├── src/
-│   ├── components/       # Reusable UI components
-│   ├── contexts/         # Context API for state management
-│   ├── hooks/            # Custom React hooks
-│   ├── lib/              # Utility functions and API integrations
-│   ├── pages/            # Application pages (Dashboard, Insights, etc.)
-│   └── App.tsx           # Main application entry point
-├── public/               # Static assets
-├── package.json          # Project dependencies
-└── README.md             # Project documentation
+React app (Vite)  --POST /predict-->  FastAPI (:8000)
+                                              |- scaler (neurocare_scaler.pkl)
+                                              |- model  (neurocare_stress_model.h5)
+                                              '- OpenRouter LLM -> explanation + recommendation
 ```
 
-## Publication
-**AICTE IC-AISMART 2025**- [Paper](https://drive.google.com/file/d/1rtIyLkhXJknbG6IZ3xnvYhAdfZMtekmR/view?usp=sharing)
-- [Certificate](https://drive.google.com/file/d/1gIixv8__F7TiX_gNnTqxBhzfHkMsGMrs/view?usp=sharing)
+**Model** (`Neurocare_lstm_cnn.ipynb`): 7-day input window, Bidirectional LSTM (64) -> self-attention -> LayerNorm -> Conv1D (32) -> global max pooling -> Dense (64) -> Dropout (0.25) -> Dense (1) regression output.
 
-- 
-## Getting Started
+**Data**: `heart_dataset.csv` (raw) and `cleaned_dataset.csv` (after `cleaning.ipynb`), with columns HRV, HR, BreathingRate, EDA, SkinTemp, Steps, ActiveMinutes, SleepHours, SleepInterruptions and StressScore.
 
-### Prerequisites
-- **Node.js**: Install the latest version from [Node.js](https://nodejs.org/).
-- **Python**: Install Python 3.8+ from [Python.org](https://www.python.org/).
+## API
 
-### Installation
+| Method | Route | Purpose |
+|---|---|---|
+| POST | `/predict` | Score the last 7 days, return score, explanation, recommendation, and save an alert |
+| POST | `/mock-stress-analysis` | Canned analysis without the model |
+| GET | `/notifications` | List alerts |
+| POST | `/notifications` | Add an alert |
+| PATCH | `/notifications/{id}/read` | Mark an alert read |
+| DELETE | `/notifications/{id}` | Delete an alert |
 
-1. Clone the repository:
+## Tech stack
+
+- **Frontend**: React, TypeScript, Vite, Tailwind CSS, shadcn/ui, Recharts, Clerk
+- **Backend**: Python, FastAPI, Uvicorn
+- **ML**: TensorFlow/Keras, scikit-learn scaler, pandas, NumPy
+
+## Project structure
+
+```
+app/                     React frontend (src/pages, src/components, src/contexts, src/lib/api.ts)
+app.py                   FastAPI backend
+auth.py                  mock Google OAuth + dataset API
+neurocare_stress_model.h5   trained model
+neurocare_scaler.pkl        fitted scaler
+Neurocare_lstm_cnn.ipynb    model training
+cleaning.ipynb              data cleaning
+heart_dataset.csv, cleaned_dataset.csv
+docs/screenshots/        README screenshots
+```
+
+## Getting started
+
+**Prerequisites**: Node.js 18+, Python 3.8+.
+
+1. Clone
+
    ```bash
    git clone https://github.com/rajarshidattapy/cardiocare.git
    cd cardiocare
    ```
 
-2. Install frontend dependencies:
+2. Backend
+
+   ```bash
+   pip install fastapi uvicorn tensorflow numpy pandas scikit-learn requests
+   export OPENROUTER_API_KEY=your_key   # needed for the AI explanation
+   python app.py                        # serves on http://localhost:8000
+   ```
+
+3. Frontend
+
    ```bash
    cd app
    npm install
+   echo "VITE_CLERK_PUBLISHABLE_KEY=your_clerk_key" > .env
+   npm run dev -- --port 3000            # backend CORS allows :3000 and :5173
    ```
-
-3. Set up the Python environment:
-   ```bash
-   python -m venv venv
-   & .\venv\Scripts\Activate.ps1
-   pip install -r requirements.txt
-   ```
-
-### Running the Application
-
-1. Start the backend server:
-   ```bash
-   python app.py
-   ```
-
-2. Start the frontend development server:
-   ```bash
-   cd app
-   npm run dev
-   ```
-
-3. Open the application in your browser at `http://localhost:3000`.
 
 ## Contributing
 
-We welcome contributions! Please follow these steps:
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Submit a pull request with a detailed description of your changes.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- **Icons**: Provided by Lucide React.
-- **UI Design**: Inspired by modern wellness applications.
-- **Community**: Thanks to all contributors and users for their support.
+Fork the repo, create a branch, and open a pull request with a clear description.
