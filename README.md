@@ -55,6 +55,11 @@ app/
 └── README.md             # Project documentation
 ```
 
+## Publication
+**AICTE IC-AISMART 2025**- [Paper](https://drive.google.com/file/d/1rtIyLkhXJknbG6IZ3xnvYhAdfZMtekmR/view?usp=sharing)
+- [Certificate](https://drive.google.com/file/d/1gIixv8__F7TiX_gNnTqxBhzfHkMsGMrs/view?usp=sharing)
+
+- 
 ## Getting Started
 
 ### Prerequisites
